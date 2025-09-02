@@ -28,16 +28,17 @@ def store_text(driver: Driver, embedder: Embedder, text: str):
 
 def print_single_method_search_results(similar_results: EagerResult):
     for record in similar_results.records:
-        print(record["text"])
-        print(record["score"], record["index"])
+        print("text: \n" + record["text"])
+        print("score: " + str(record["score"]))
+        print("index: " + str(record["index"]))
         print("======")
 
 
 def print_hybrid_search_results(similar_hybrid_results: EagerResult):
     for record in similar_hybrid_results.records:
         print("text: \n" + record["node"]["text"])
-        print("score: " + record["score"])
-        print("index: " + record["node"]["index"])
+        print("score: " + str(record["score"]))
+        print("index: " + str(record["node"]["index"]))
         print("======")
 
 
