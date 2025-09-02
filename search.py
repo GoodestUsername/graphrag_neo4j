@@ -1,9 +1,9 @@
-from neo4j import Driver
+from neo4j import Driver, EagerResult
 
 from embedder import Embedder
 
 
-def vector_search(driver: Driver, embedder: Embedder, question: str):
+def vector_search(driver: Driver, embedder: Embedder, question: str) -> EagerResult:
     return driver.execute_query(
         """
             CALL db.index.vector.queryNodes('pdf', 2, $question_embedding)
@@ -14,7 +14,7 @@ def vector_search(driver: Driver, embedder: Embedder, question: str):
     )
 
 
-def text_search(driver: Driver, question: str):
+def text_search(driver: Driver, question: str) -> EagerResult:
     return driver.execute_query(
         """
             CALL db.index.fulltext.queryNodes('PdfChunkFullText', $question, {limit: 2})
@@ -25,7 +25,9 @@ def text_search(driver: Driver, question: str):
     )
 
 
-def hybrid_search(driver: Driver, embedder: Embedder, question: str, k: int = 2):
+def hybrid_search(
+    driver: Driver, embedder: Embedder, question: str, k: int = 2
+) -> EagerResult:
     question_embedding = embedder.encode(question)[0]
     return driver.execute_query(
         """
