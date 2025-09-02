@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 from neo4j import Driver, EagerResult, GraphDatabase
 from torch import Tensor
 
-from chunk_text import chunk_text
 from embedder import Embedder, EmbeddingService
+from ingestion import chunk_text
 from search import hybrid_search
 
 load_dotenv()
@@ -57,3 +57,14 @@ def print_hybrid_search_results(similar_hybrid_results: EagerResult):
         print("score: " + record["score"])
         print("index: " + record["node"]["index"])
         print("======")
+
+
+def main():
+    with GraphDatabase.driver(URI, auth=AUTH) as driver:
+        embedder = EmbeddingService(EMBED_MODEL, cache_dir=CACHE_DIR)
+        res = hybrid_search(driver, embedder, "according to all")
+        print_hybrid_search_results(res)
+
+
+if __name__ == "__main__":
+    main()
