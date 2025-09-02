@@ -5,6 +5,9 @@ import numpy as np
 from neo4j import Driver
 from torch import Tensor
 
+from embedder import Embedder
+
+
 @dataclass
 class Document:
     text: List[str]
@@ -34,23 +37,31 @@ def store_node(
     )
 
 
-def store_document(driver: Driver, documents: List[Document]):
+def store_document(
+    driver: Driver, embedder: Embedder, id: str, sections: List[Section]
+):
+    from ingestion import chunk_text
+
     cypher_import_query = """
         MERGE (pdf:PDF {id:$pdf_id})
-        MERGE (p:Parent {id:$pdf_id + '-' + $id})
+        MERGE (p:Parent {id:$pdf_id + '_' + $id})
         SET p.text = $parent
         MERGE (pdf)-[:HAS_PARENT]->(p)
         WITH p, $children AS children, $embeddings as embeddings
         UNWIND range(0, size(children) - 1) AS child_index
-        MERGE (c:Child {id: $pdf_id + '-' + $id + '-' + toString(child_index)})
+        MERGE (c:Child {id: $pdf_id + '_' + $id + '_' + toString(child_index)})
         SET c.text = children[child_index], c.embedding = embeddings[child_index]
         MERGE (p)-[:HAS_CHILD]->(c);
     """
-    driver.execute_query(
-        cypher_import_query,
-        id=str(i),
-        pdf_id='1709.00666'
-        parent=chunk,
-        children=child_chunks,
-        embeddings=embeddings,
-    )
+
+    for section in sections:
+        chunked_sections = chunk_text(section.text, 512, 64)
+        embeddings = embedder.encode(chunked_sections)
+        driver.execute_query(
+            cypher_import_query,
+            parent=section.text,
+            id=section.id,
+            pdf_id=id,
+            children=chunked_sections,
+            embeddings=embeddings,
+        )
