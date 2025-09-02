@@ -35,7 +35,7 @@ def chunk_text_size_split(text: str, chunk_size: int, overlap: int):
     return chunks
 
 
-def chunk_text(text: str, chunk_size: int, overlap: int, split_on_whitespace_only=True):
+def chunk_text(text: str, chunk_size: int, overlap: int, split_on_whitespace_only=True) -> List[str]:
     return (
         chunk_text_whitespace_split(text, chunk_size, overlap)
         if split_on_whitespace_only
