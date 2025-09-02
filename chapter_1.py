@@ -50,10 +50,10 @@ def main():
         store_text(driver, embedder, BEE_MOVIE_SCRIPT)
 
         text_search_results = text_search(driver, "according to all")
-        print_hybrid_search_results(text_search_results)
+        print_single_method_search_results(text_search_results)
 
         vector_search_results = vector_search(driver, embedder, "according to all")
-        print_hybrid_search_results(vector_search_results)
+        print_single_method_search_results(vector_search_results)
 
         hybrid_search_results = hybrid_search(driver, embedder, "according to all")
         print_hybrid_search_results(hybrid_search_results)
