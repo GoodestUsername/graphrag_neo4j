@@ -1,14 +1,12 @@
 import os
-from typing import List
 
-import numpy as np
 from dotenv import load_dotenv
 from neo4j import Driver, EagerResult, GraphDatabase
-from torch import Tensor
 
 from embedder import Embedder, EmbeddingService
 from ingestion import chunk_text
 from search import hybrid_search
+from store import Document, store_node
 
 load_dotenv()
 
@@ -21,27 +19,9 @@ EMBED_MODEL = os.getenv("EMBED_MODEL", "")
 CACHE_DIR = os.getenv("EMBED_CACHE_DIR", "")
 
 
-def store_node(
-    driver: Driver,
-    chunks: List[str],
-    embeddings: list[Tensor] | np.ndarray | Tensor | list[dict[str, Tensor]],
-):
-    driver.execute_query(
-        """
-            WITH $chunks as chunks, range(0, size($chunks)) AS index
-            UNWIND index AS i
-            WITH i, chunks[i] AS chunk, $embeddings[i] AS embedding
-            MERGE (c:Chunk {index: i})
-            SET c.text = chunk, c.embedding = embedding
-        """,
-        chunks=chunks,
-        embeddings=embeddings,
-    )
-
-
 def store_text(driver: Driver, embedder: Embedder, text: str):
     chunks = chunk_text(text, 512, 64, False)
-    store_node(driver, chunks, embedder.encode(chunks))
+    store_node(driver, Document(text=chunks, embeddings=embedder.encode(chunks)))
 
 
 def print_single_method_search_results(similar_results: EagerResult):
