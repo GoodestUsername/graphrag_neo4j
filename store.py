@@ -11,6 +11,12 @@ class Document:
     embeddings: list[Tensor] | np.ndarray | Tensor | list[dict[str, Tensor]]
 
 
+@dataclass
+class Section:
+    id: str
+    text: str
+
+
 def store_node(
     driver: Driver,
     document: Document,
