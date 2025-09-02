@@ -1,4 +1,7 @@
+import re
 from typing import List
+
+from store import Section
 
 
 def chunk_text_whitespace_split(text: str, chunk_size: int, overlap: int) -> List[str]:
@@ -43,3 +46,19 @@ def chunk_text(
         if split_on_whitespace_only
         else chunk_text_size_split(text, chunk_size, overlap)
     )
+
+
+def split_text_to_section_by_titles(text: str) -> List[Section]:
+    title_pattern = re.compile(
+        r"^(CHAPTER\s+\d+\.\s+.+?[.!?]|Epilogue|Prologue)$", re.DOTALL | re.MULTILINE
+    )
+
+    titles = [title.strip().lower() for title in title_pattern.findall(text)]
+    sections = list(
+        filter(lambda text: bool(text.strip()), re.split(title_pattern, text))
+    )
+
+    return [
+        Section(id=title, text=title + sections[1 + i * 2])
+        for i, title in enumerate(titles)
+    ]
