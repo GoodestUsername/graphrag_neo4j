@@ -54,3 +54,27 @@ def hybrid_search(
         question=question,
         question_embedding=question_embedding,
     )
+
+
+def graph_vector_search(
+    driver: Driver,
+    embedder: Embedder,
+    index_name: str,
+    question: str,
+    k: int = 4,
+) -> EagerResult:
+    question_embedding = embedder.encode([question])[0]
+    return driver.execute_query(
+        """
+            CALL db.index.vector.queryNodes($index_name, $k * 4, $question_embedding)
+            YIELD node, score
+            MATCH (node)<-[:HAS_CHILD]-(parent)
+            WITH parent, max(score) AS score
+            RETURN parent.text AS text, score
+            ORDER BY score DESC
+            LIMIT toInteger($k)
+        """,
+        question_embedding=question_embedding,
+        k=k,
+        index_name=index_name,
+    )
