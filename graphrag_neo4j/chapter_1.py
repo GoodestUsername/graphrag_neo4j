@@ -3,10 +3,10 @@ import os
 from dotenv import load_dotenv
 from neo4j import Driver, EagerResult, GraphDatabase
 
-from bee_movie_script import BEE_MOVIE_SCRIPT
-from db_setup import create_text_index, create_vector_index
-from embedder import Embedder, EmbeddingService
-from ingestion import chunk_text
+from graphrag_neo4j.constants.bee_movie_script import BEE_MOVIE_SCRIPT
+from graphrag_neo4j.db_setup import create_text_index, create_vector_index
+from graphrag_neo4j.embedder import Embedder, EmbeddingService
+from graphrag_neo4j.ingestion import chunk_text
 from search import hybrid_search, text_search, vector_search
 from store import Document, store_node
 

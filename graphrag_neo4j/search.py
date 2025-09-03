@@ -1,6 +1,6 @@
 from neo4j import Driver, EagerResult
 
-from embedder import Embedder
+from graphrag_neo4j.embedder import Embedder
 
 
 def vector_search(driver: Driver, embedder: Embedder, question: str) -> EagerResult:

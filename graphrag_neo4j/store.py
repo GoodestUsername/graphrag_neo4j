@@ -5,7 +5,7 @@ import numpy as np
 from neo4j import Driver
 from torch import Tensor
 
-from embedder import Embedder
+from graphrag_neo4j.embedder import Embedder
 
 
 @dataclass
@@ -40,7 +40,7 @@ def store_node(
 def store_document(
     driver: Driver, embedder: Embedder, id: str, sections: List[Section]
 ):
-    from ingestion import chunk_text
+    from graphrag_neo4j.ingestion import chunk_text
 
     cypher_import_query = """
         MERGE (pdf:PDF {id:$pdf_id})

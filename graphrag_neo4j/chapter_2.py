@@ -3,10 +3,10 @@ import os
 from dotenv import load_dotenv
 from neo4j import Driver, EagerResult, GraphDatabase
 
-from db_setup import create_graph_vector_index
-from embedder import Embedder, EmbeddingService
-from ingestion import split_text_to_section_by_titles
-from moby_dick_text import MOBY_DICK_TEXT
+from graphrag_neo4j.db_setup import create_graph_vector_index
+from graphrag_neo4j.embedder import Embedder, EmbeddingService
+from graphrag_neo4j.ingestion import split_text_to_section_by_titles
+from graphrag_neo4j.constants.moby_dick_text import MOBY_DICK_TEXT
 from search import graph_vector_search
 from store import store_document
 
